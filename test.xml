@@ -1,2 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<main attr="attr1">Main</main>
+<main attr="attr1">
+  <field name="input" />
+</main>

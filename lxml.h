@@ -183,8 +183,15 @@ char* XMLNodeAttribute_val(XMLNode* node, const char* key)
     return NULL;
 }
 
+enum _TagType
+{
+    TAG_START,
+    TAG_INLINE
+};
+typedef enum _TagType TagType;
 
-static void parse_attrs(char* buff, int* i, char* lex, int* lexi, XMLNode* curr_node)
+
+static TagType parse_attrs(char* buff, int* i, char* lex, int* lexi, XMLNode* curr_node)
 {
     XMLAttribute curr_attr = { 0, 0 };
     while (buff[*i] != '>')
@@ -206,7 +213,6 @@ static void parse_attrs(char* buff, int* i, char* lex, int* lexi, XMLNode* curr_
         if (lex[(*lexi) - 1] == ' ')
         {
             (*lexi)--;
-            continue;
         }
 
         // attribute key
@@ -224,7 +230,7 @@ static void parse_attrs(char* buff, int* i, char* lex, int* lexi, XMLNode* curr_
             if (!curr_attr.key)
             {
                 fprintf(stderr, "Value has no key.\n");
-                return;
+                return TAG_START;
             }
             (*lexi) = 0;
             (*i)++;
@@ -240,7 +246,16 @@ static void parse_attrs(char* buff, int* i, char* lex, int* lexi, XMLNode* curr_
             (*i)++;
             continue;
         }
+        if (buff[*i - 1] == '/' && buff[*i] == '>')
+        {
+            lex[(*lexi)] = '\0';
+            if (!curr_node->tag)
+                curr_node->tag = strdup(lex);
+            (*i)++;
+            return TAG_INLINE;
+        }
     }
+    return TAG_START;
 }
 
 int XMLDocument_load(XMLDocument *doc, const char *path)
@@ -362,7 +377,12 @@ int XMLDocument_load(XMLDocument *doc, const char *path)
 
             // get the xml tag name & attributes
             i++;
-            parse_attrs(buff, &i, lex, &lexi, curr_node);
+            if (parse_attrs(buff, &i, lex, &lexi, curr_node) == TAG_INLINE)
+            {
+                curr_node = curr_node->parentNode;
+                i++;
+                continue;
+            }
             
             // set tag name if not set
             lex[lexi] = '\0';
