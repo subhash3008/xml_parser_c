@@ -1,1 +1,7 @@
-<root key1="value" anotherKey="value value">ROOOOOT</root>
+<main>Main</main>
+<another_main>
+  <inner>
+    <more>I am 3rd nested node.</more>
+  </inner>
+  <another>Another</another>
+</another_main>
