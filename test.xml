@@ -1,6 +1,7 @@
 <main>Main</main>
 <another_main>
   <inner>
+    <!-- Hello I am a comment -->
     <more>I am 3rd nested node.</more>
   </inner>
   <another>Another</another>

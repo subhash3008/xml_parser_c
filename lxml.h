@@ -19,6 +19,22 @@
     #define FALSE 0
 #endif
 
+int ends_with(const char* str, const char* substr)
+{
+    int str_len = strlen(str);
+    int substr_len = strlen(substr);
+
+    if (str_len < substr_len)
+        return FALSE;
+    
+    for (int i = 0; i < substr_len; ++i)
+    {
+        if (str[str_len - substr_len + i] != substr[i])
+            return FALSE;
+    }
+    return TRUE;
+}
+
 struct _XMLAttribute
 {
     char* key;
@@ -218,6 +234,26 @@ int XMLDocument_load(XMLDocument *doc, const char *path)
                 curr_node = curr_node->parentNode;
                 i++;
                 continue;
+            }
+
+            // special nodes
+            if (buff[i + 1] == '!')
+            {
+                while (buff[i] != ' ' && buff[i] != '>')
+                    lex[lexi++] = buff[i++];
+                lex[lexi] = '\0';
+
+                // comments
+                if (!strcmp(lex, "<!--"))
+                {
+                    lex[lexi] = '\0';
+                    while (!ends_with(lex, "-->"))
+                    {
+                        lex[lexi++] = buff[i++];
+                        lex[lexi] = '\0';
+                    }
+                    continue;
+                }
             }
 
             // Set current node
