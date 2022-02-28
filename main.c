@@ -5,10 +5,14 @@ int main()
   XMLDocument doc;
   if(XMLDocument_load(&doc, "test.xml"))
   {
+    printf("Version : %s,\tEncoding: %s\n", doc.version, doc.encoding);
     XMLNode* main_node = XMLNode_child(doc.root, 0);
-    printf("%s => %s\n", main_node->tag, main_node->inner_text);
-    XMLNode* another_node = XMLNode_child(doc.root, 1);
-    printf("Children of another node => %d\n", another_node->children.size);
+    printf("%s => %s\n", main_node->attributes.data->key, main_node->attributes.data->value);
+
+    // XMLNode* main_node = XMLNode_child(doc.root, 0);
+    // printf("%s => %s\n", main_node->tag, main_node->inner_text);
+    // XMLNode* another_node = XMLNode_child(doc.root, 1);
+    // printf("Children of another node => %d\n", another_node->children.size);
 
 
     // printf("%s: %s\n", doc.root->tag, doc.root->inner_text);
